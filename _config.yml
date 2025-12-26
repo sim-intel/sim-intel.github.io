@@ -1,0 +1,112 @@
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely edit after that. If you find
+# yourself editing this file very often, consider using Jekyll's data files
+# feature for the data you need to update frequently.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+#
+# If you need help with YAML syntax, here are some quick references for you:
+# https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
+# https://learnxinyminutes.com/docs/yaml/
+#
+# Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
+
+title: Simulated Intelligence (σι)
+author:
+  name: Miguel Alonso Jr
+  email: miguel@sim-intel.co
+description: >- # this means to ignore newlines until "baseurl:"
+  Solving embodied AI through simulation.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://sim-intel.co" # the base hostname & protocol for your site, e.g. http://example.com
+# twitter_username: jekyllrb
+github_username:  miguelalonsojr
+
+# Build settings
+# theme: minima
+remote_theme: "jekyll/minima"
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-paginate-v2
+  - jekyll-remote-theme
+  - jekyll-target-blank
+  - jekyll-sitemap
+  - jekyll-redirect-from
+
+# mimima config
+minima:
+  skin: solarized-dark
+  hide_site_feed_link: true
+  show_excerpts: true
+  nav_pages:
+    - newsletter.md
+    - research.md
+    - services.md
+    - about.md
+  social_links:
+    - title: Simulated Intelligence on GitHub
+      icon: github
+      url: https://github.com/sim-intel
+    - title: Miguel Alonso Jr on LinkedIn
+      icon: square-linkedin
+      url: https://linkedin.com/in/miguelalonsojr
+    - title: Miguel Alonso Jr on BlueSky
+      icon: bluesky
+      url: https://bsky.app/profile/miguelalonsojr.bsky.social
+
+# Exclude from processing.
+# The following items will not be processed, by default.
+# Any item listed under the `exclude:` key here will be automatically added to
+# the internal "default list".
+#
+# Excluded items can be processed by explicitly listing the directories or
+# their entries' file path in the `include:` list.
+#
+# exclude:
+#   - .sass-cache/
+#   - .jekyll-cache/
+#   - gemfiles/
+#   - Gemfile
+#   - Gemfile.lock
+#   - node_modules/
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/
+
+
+# # Keywords
+# keywords: ['physical ai', 'machine learning', 'reinforcement learning', 'artificial intelligence', 'robotics', 'robot learning']
+
+# # Styling
+# sass:
+#   sass_dir: _sass
+#   style: expanded # compact, expanded or compressed
+
+# # Paginate
+# pagination:
+#   enabled: true
+#   # Value set low for demonstration purposes
+#   per_page: 3
+#   sort_field: 'date'
+#   sort_reverse: true
+
+# # Category Paginating
+# # autopages:
+# #   enabled: true
+# #   categories:
+# #     title: 'Posts in category :cat'
+# #     permalink: '/category/:cat'
+# #     silent: false
+
+# # Exclusions
+# exclude: [ 'README.md', 'COPYING' ]
