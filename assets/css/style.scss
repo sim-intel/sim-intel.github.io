@@ -1,0 +1,114 @@
+---
+---
+
+@import "minima/skins/{{ site.minima.skin | default: 'classic' }}";
+@import "minima/initialize";
+
+/* Newsletter CTA Styling - Solarized Dark Theme */
+.newsletter-cta {
+  background-color: #073642;
+  border: 1px solid #586e75;
+  border-radius: 4px;
+  padding: 2rem;
+  margin: 2rem 0;
+}
+
+.newsletter-cta-content h3 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  color: #839496;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.newsletter-cta-content p {
+  margin-bottom: 1.5rem;
+  color: #93a1a1;
+  line-height: 1.6;
+}
+
+.embeddable-buttondown-form {
+  width: 100%;
+}
+
+.embeddable-buttondown-form .form-group {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.embeddable-buttondown-form input[type="email"] {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.75rem 1rem;
+  border: 1px solid #586e75;
+  border-radius: 3px;
+  font-size: 1rem;
+  background-color: #002b36;
+  color: #93a1a1;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.embeddable-buttondown-form input[type="email"]:focus {
+  outline: none;
+  border-color: #2aa198;
+  box-shadow: 0 0 0 2px rgba(42, 161, 152, 0.2);
+}
+
+.embeddable-buttondown-form input[type="email"]::placeholder {
+  color: #586e75;
+}
+
+.embeddable-buttondown-form input[type="submit"] {
+  padding: 0.75rem 2rem;
+  background-color: #2aa198;
+  color: #002b36;
+  border: none;
+  border-radius: 3px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background-color 0.2s, opacity 0.2s;
+  white-space: nowrap;
+}
+
+.embeddable-buttondown-form input[type="submit"]:hover {
+  background-color: #268bd2;
+  opacity: 0.9;
+}
+
+.embeddable-buttondown-form input[type="submit"]:active {
+  opacity: 1;
+}
+
+.newsletter-privacy {
+  font-size: 0.875rem;
+  color: #586e75;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .newsletter-cta {
+    padding: 1.5rem;
+  }
+
+  .embeddable-buttondown-form .form-group {
+    flex-direction: column;
+  }
+
+  .embeddable-buttondown-form input[type="email"],
+  .embeddable-buttondown-form input[type="submit"] {
+    width: 100%;
+  }
+}
+
+/* Post content newsletter CTA - add extra spacing */
+.post-content .newsletter-cta,
+article .newsletter-cta {
+  margin: 3rem 0;
+}

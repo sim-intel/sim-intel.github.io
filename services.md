@@ -2,9 +2,10 @@
 layout: page
 title: Services
 permalink: /services/
+hide_title: true
 ---
 
-Simulated Intelligence provides specialized AI and robotics services to accelerate your development from research to deployment.
+In addition to research, Simulated Intelligence provides specialized AI and robotics services to accelerate your development from research to deployment.
 
 ## AI & ML Consulting
 

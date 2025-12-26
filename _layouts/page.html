@@ -1,0 +1,16 @@
+---
+layout: base
+---
+<article class="post">
+
+  <header class="post-header">
+    {%- unless page.hide_title -%}
+    <h1 class="post-title">{{ page.title | escape }}</h1>
+    {%- endunless -%}
+  </header>
+
+  <div class="post-content">
+    {{ content }}
+  </div>
+
+</article>
