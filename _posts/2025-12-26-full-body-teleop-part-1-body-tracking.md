@@ -302,7 +302,7 @@ While the system works well, there are some limitations:
 1. **Leg tracking accuracy**: Quest 3 infers leg position from head/torso - not always perfect
 2. **Occlusion handling**: Arms behind back can lose tracking
 3. **Network dependency**: WiFi quality directly impacts latency
-4. **No finger body tracking/retargeting yet**: This will be covered in future posts
+4. **No full body tracking/retargeting yet (only hands right now)**: This will be covered in future posts
 
 ## Next Steps
 
