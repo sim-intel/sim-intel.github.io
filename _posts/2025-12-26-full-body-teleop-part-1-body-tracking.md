@@ -6,17 +6,16 @@ categories: [robotics, teleop, isaaclab]
 tags: [meta-quest-3, body-tracking, isaaclab, isaacgym, alvr, steamvr, openxr, humanoid]
 ---
 
-This is the first post in a series documenting our journey toward building a full-body teleoperation system for humanoid robots using the Meta Quest 3 and NVIDIA IsaacSim. The goal is to create a high-quality dataset collection pipeline for training embodied AI policies.
+This is the first post in a series documenting our journey toward building a full-body teleoperation system for humanoid robots using the Meta Quest 3 and NVIDIA IsaacSim. The goal is to create a high-quality dataset collection pipeline for training embodied AI policies in a low-cost, accessible way.
 
 ## Series Overview
 
-Building effective embodied AI requires high-quality training data. While we can generate synthetic data in simulation, human demonstrations remain crucial for learning natural, task-oriented behaviors. This series will cover:
+Building effective embodied AI requires high-quality training data. While we can collect training data using real robots, simulation is a compeling, low-cost alternative for collecting human demonstrations, which remains crucial for learning natural human-like, task-oriented behaviors. This series will cover:
 
-1. **Part 1: Body Tracking in IsaacSim** (this post)
-2. Part 2: Hand Tracking and Manipulation
-3. Part 3: Retargeting to Different Humanoid Morphologies
+1. **Part 1: Adding Body Tracking in IsaacSim** (this post)
+2. Part 2: Training a physics based, cross-embodiment motion contoller
+3. Part 3: Integrating motion control with full body tracking
 4. Part 4: Dataset Collection Pipeline
-5. Part 5: Real-time Control and Latency Optimization
 
 Our approach leverages the Meta Quest 3's built-in body tracking capabilities, streaming to IsaacSim via ALVR (Air Light VR) and SteamVR. This provides a low-cost, wireless solution for capturing full-body motion without expensive motion capture equipment.
 
@@ -26,7 +25,7 @@ Our approach leverages the Meta Quest 3's built-in body tracking capabilities, s
 - Built-in body tracking using inside-out cameras
 - Hand tracking without controllers
 - Wireless operation
-- Affordable ($500 vs. $10,000+ motion capture systems)
+- Affordable ($500 vs. $3600+ AVP or $10,000+ mocap systems)
 - Active developer community
 
 **NVIDIA IsaacSim** provides:
@@ -40,9 +39,9 @@ Our approach leverages the Meta Quest 3's built-in body tracking capabilities, s
 
 ### Hardware Requirements
 
-- **VR Headset**: Meta Quest 3 (Quest Pro also works)
+- **VR Headset**: Meta Quest 3
 - **PC**: Linux machine with NVIDIA GPU (RTX 3070 or better recommended)
-  - We tested on Ubuntu 22.04
+  - We tested on Ubuntu 25.04 with an RTX4090 GPU
   - Strong WiFi or WiFi 6/6E router for low-latency streaming
 - **Network**: 5GHz WiFi network (dedicated router recommended)
 
@@ -51,7 +50,7 @@ Our approach leverages the Meta Quest 3's built-in body tracking capabilities, s
 Our setup uses the following components:
 
 1. **ALVR (Nightly Build)** - Streams VR from PC to Quest
-2. **SteamVR** - VR runtime and OpenXR implementation
+2. **SteamVR** - VR runtime and OpenXR runtime
 3. **IsaacSim** - Robot simulation environment
 4. **IsaacLab** - RL framework built on IsaacSim
 
@@ -62,19 +61,17 @@ Our setup uses the following components:
 Steam is required for SteamVR on Linux:
 
 ```bash
-# Install Steam
-# Follow official instructions: https://store.steampowered.com/about/
+# Install Steam for Ubuntu repositories
+# Instructions: https://linuxcapable.com/how-to-install-steam-on-ubuntu-linux/
 
 # Launch Steam and install SteamVR from the Steam store
-# Or use command line:
-steam steam://install/250820
 ```
 
-**Documentation**: [SteamVR on Linux](https://github.com/ValveSoftware/SteamVR-for-Linux)
+**Installation Instructions**: [SteamVR on Linux](https://linuxcapable.com/how-to-install-steam-on-ubuntu-linux/)
 
 ### 2. Install ALVR (Nightly Build)
 
-ALVR enables wireless streaming from your PC to the Quest. We use the nightly build for the latest body tracking support.
+ALVR enables wireless streaming from your PC to the Quest. We used the nightly build v21.0.0-dev11+nightly.2025.11.13, which has body tracking support.
 
 ```bash
 # Download ALVR nightly from GitHub releases
@@ -104,12 +101,10 @@ cd alvr_streamer_linux
    - It should auto-discover your PC on the network
    - Click "Trust" when prompted
 
-4. **Configure ALVR Settings**:
-   - **Video codec**: H.265/HEVC (better quality, lower bandwidth)
-   - **Bitrate**: 100-150 Mbps (adjust based on your network)
-   - **Resolution**: 100% (adjust if needed for performance)
-   - **Framerate**: 90 Hz or 120 Hz
-   - **Enable body tracking**: Check this in the settings!
+4. **Configure ALVR Settings**: most of the defaults work well. Just set the following
+   - **Hand tracking interaction**: Set this to SteamVR Input 2.0
+   - **Enable body tracking**: Enable body tracking with the sink set to VRChat Body OSC on port 9000
+   - **Offsets**: Set handtracking postion offsets to (0, -0.02, 0) for x, y, z and handtracking rotation offsets to (0, 5°, 0)
 
 ### 4. Configure SteamVR for OpenXR
 
@@ -122,19 +117,12 @@ SteamVR needs to be set as the OpenXR runtime:
 # Set "Set SteamVR as OpenXR runtime"
 ```
 
-Alternatively, manually set the runtime:
+Be sure to set the SteamVR launch options per ALVR's recommendation
 
-```bash
-# Create/edit the active_runtime.json
-mkdir -p ~/.config/openxr/1
-echo '{
-  "file_format_version": "1.0.0",
-  "runtime": {
-    "name": "SteamVR",
-    "library_path": "~/.steam/steam/steamapps/common/SteamVR/steamxr_linux64.so"
-  }
-}' > ~/.config/openxr/1/active_runtime.json
 ```
+/<PATH-TO-STEAMVR-INSTALL>/bin/vrmonitor.sh %command%
+```
+
 
 ### 5. Install IsaacSim and IsaacLab
 
@@ -150,10 +138,15 @@ Follow the official installation guides:
 - Built on top of IsaacSim
 - Provides RL training infrastructure
 
+Make sure to checkout commit `bde0bcaa1f6aacaa9b89b226d2ae10754a23d3e1`
+
 ```bash
 # Clone IsaacLab
 git clone https://github.com/isaac-sim/IsaacLab.git
 cd IsaacLab
+
+# Checkout commit bde0bcaa1f6aacaa9b89b226d2ae10754a23d3e1
+git checkout bde0bcaa1f6aacaa9b89b226d2ae10754a23d3e1
 
 # Run installation script
 ./isaaclab.sh --install
@@ -161,6 +154,8 @@ cd IsaacLab
 # Verify installation
 ./isaaclab.sh -p source/standalone/workflows/teleoperation/teleop_se3_agent.py
 ```
+
+{% include newsletter-cta-small.html %}
 
 ## Getting Body Tracking Working
 
@@ -170,7 +165,7 @@ Out of the box, IsaacLab doesn't have full support for Meta Quest 3 body trackin
 
 ### The Solution: OSC-Based Body Tracking
 
-I've created a patch for IsaacLab that enables body tracking support using an OSC (Open Sound Control) receiver approach. Rather than relying solely on OpenXR extensions (which can be inconsistent across platforms), this solution receives body tracking data via UDP on port 9000.
+We've created a patch for IsaacLab that enables body tracking support using an OSC (Open Sound Control) receiver approach. Rather than relying solely on OpenXR extensions (which can be inconsistent across platforms), this solution receives body tracking data via UDP on port 9000.
 
 **Patch available here**: [IsaacLab Body Tracking Patch](https://gist.github.com/miguelalonsojr/d0e6d25e91eed9575bd7a05543ed9125)
 
@@ -178,7 +173,12 @@ Apply the patch to your IsaacLab installation:
 
 ```bash
 cd IsaacLab
+
 # Download and apply the patch
+wget https://gist.github.com/miguelalonsojr/d0e6d25e91eed9575bd7a05543ed9125 -O full_body_teleop.patch
+
+git apply full_body_teleop.patch
+
 # See the gist for detailed instructions
 ```
 
@@ -200,7 +200,7 @@ A new module that handles body tracking data reception:
 
 - **Network Protocol**: Listens on UDP port 9000 for OSC messages
 - **Coordinate System**: Uses Z-up convention with X-forward orientation
-- **Rotation Computation**: Heuristically computes joint orientations by calculating forward vectors between connected joints
+- **Rotation Computation (optional)**: Heuristically computes joint orientations by calculating forward vectors between connected joints. This is optional and is only triggered when needed via an API call and was implemented this way for speed.
 
 The receiver reconstructs full 6DOF poses from position data, making it robust to varying tracking quality.
 
@@ -249,7 +249,7 @@ OSC Messages (UDP:9000)
   ↓
 BodyOscReceiver (position extraction)
   ↓
-Rotation Recomputation (forward/up vectors → quaternions)
+Rotation Recomputation (forward/up vectors → quaternions) (optional)
   ↓
 OpenXRDevice (pose retrieval)
   ↓
@@ -269,7 +269,10 @@ Once everything is installed and patched:
 3. **Launch IsaacLab** teleoperation script:
 
 ```bash
-./isaaclab.sh -p source/standalone/workflows/teleoperation/teleop_se3_agent.py
+./isaaclab.sh -p scripts/environments/teleoperation/teleop_se3_agent.py \
+    --task Isaac-PickPlace-GR1T2-Abs-v0 \
+    --teleop_device handtracking \
+    --enable_pinocchio
 ```
 
 4. **Use keyboard controls**:
@@ -282,15 +285,15 @@ You should see your body movements mirrored on the GR1T2 humanoid robot in Isaac
 
 Here's a video of the body tracking system in action:
 
-**[INSERT YOUR VIDEO HERE]**
+<div style="padding:56.25% 0 0 0;position:relative;margin-bottom:2rem;"><iframe src="https://player.vimeo.com/video/1149479708?badge=0&autopause=0&player_id=0&app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Full Body Teleop - Body Tracking in IsaacSim"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
 
 The system successfully captures:
 - **9 body joints** tracked at 7 DOF each (head, hip, chest, feet, knees, elbows)
 - **Full 6DOF poses** with position and orientation
 - **Real-time updates** at 90 Hz
 - **Low latency** (<50ms on good WiFi)
-- **Visual feedback** via sphere markers showing joint positions in real-time
-- **Retargeting to GR1T2** humanoid robot morphology
+- **Visual feedback** via sphere markers showing body joint positions in real-time
+- **Retargeting to GR1T2** humanoid robot morphology (hands only for now)
 
 ### Current Limitations
 
@@ -299,50 +302,13 @@ While the system works well, there are some limitations:
 1. **Leg tracking accuracy**: Quest 3 infers leg position from head/torso - not always perfect
 2. **Occlusion handling**: Arms behind back can lose tracking
 3. **Network dependency**: WiFi quality directly impacts latency
-4. **No finger tracking yet**: This will be covered in Part 2
+4. **No finger body tracking/retargeting yet**: This will be covered in future posts
 
 ## Next Steps
 
 In **Part 2**, we'll tackle:
-- Hand and finger tracking for manipulation tasks
-- Integrating controller-free hand tracking
-- Mapping hand poses to robot grippers
-- Building a simple pick-and-place demo
-
-## Tips & Troubleshooting
-
-### ALVR Connection Issues
-
-- Ensure Quest 3 and PC are on the same network
-- Disable VPN and firewall temporarily to test
-- Use a dedicated 5GHz WiFi network if possible
-- Check ALVR logs for connection errors
-
-### SteamVR Not Detecting Headset
-
-- Verify ALVR is connected first
-- Restart SteamVR: `~/.steam/steam/steamapps/common/SteamVR/bin/linux64/vrstartup.sh`
-- Check OpenXR runtime configuration
-
-### Body Tracking Not Working
-
-- Ensure you're using ALVR nightly build (not stable)
-- Enable body tracking in ALVR settings
-- Check that OpenXR extension is loaded in IsaacSim logs
-- Verify the patch was applied correctly
-- **Check OSC port**: Ensure UDP port 9000 is not blocked by firewall
-  ```bash
-  # Allow port 9000 through firewall (if using ufw)
-  sudo ufw allow 9000/udp
-  ```
-- Verify OSC messages are being received (check terminal output from IsaacLab)
-
-### Performance Issues
-
-- Lower ALVR bitrate and resolution
-- Close unnecessary applications
-- Monitor GPU usage (IsaacSim is GPU-intensive)
-- Use wired connection for PC to router
+- Training a physics based cross-embodiment motion controller
+- Train a discriminator that can encode full body human pose information into a latent embedding space (we'll use this later for encoding human teleop full body pose info for controll and to create the imitation learning dataset)
 
 ## Resources
 
@@ -350,7 +316,7 @@ In **Part 2**, we'll tackle:
 - **ALVR GitHub**: [https://github.com/alvr-org/ALVR](https://github.com/alvr-org/ALVR)
 - **IsaacSim Docs**: [https://docs.omniverse.nvidia.com/isaacsim/latest/](https://docs.omniverse.nvidia.com/isaacsim/latest/)
 - **IsaacLab Docs**: [https://isaac-sim.github.io/IsaacLab/](https://isaac-sim.github.io/IsaacLab/)
-- **SteamVR Linux**: [https://github.com/ValveSoftware/SteamVR-for-Linux](https://github.com/ValveSoftware/SteamVR-for-Linux)
+- **SteamVR Linux Installation**: [https://linuxcapable.com/how-to-install-steam-on-ubuntu-linux/](https://linuxcapable.com/how-to-install-steam-on-ubuntu-linux/)
 - **Meta Quest Developer Hub**: [https://developer.oculus.com/](https://developer.oculus.com/)
 
 ## Conclusion
@@ -368,7 +334,7 @@ The ability to capture natural human motion in simulation opens up exciting poss
 
 The OSC-based approach also makes it easy to integrate other tracking systems in the future—whether that's higher-end motion capture (Vicon, OptiTrack), depth cameras (Azure Kinect), or other VR systems.
 
-Stay tuned for Part 2, where we'll add hand tracking and start collecting manipulation demonstrations!
+Stay tuned for Part 2, where we'll train a physics based motion controller!
 
 ---
 
