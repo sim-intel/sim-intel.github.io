@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Humanoid Teleop with Full Body Tracking using the Meta Quest 3 and IsaacSim"
+author: Miguel Alonso Jr.
 date: 2025-12-26 10:00:00 -0500
 # categories: [robotics, teleop, isaaclab, aritificial intelligence]
 tags: [meta-quest-3, body-tracking, isaaclab, isaacgym, alvr, steamvr, openxr, humanoid, reinforcement learning, machine learning ,artificial intelligence]
@@ -23,7 +24,7 @@ Building effective embodied AI requires high-quality training data. While we can
 ## Why the Meta Quest 3 + IsaacSim?
 
 **Meta Quest 3** offers:
-- Built-in body tracking using inside-out cameras
+- Built-in body tracking using inside-out body tracking
 - Hand tracking without controllers
 - Wireless operation
 - Affordable ($500 vs. $3600+ AVP or $10,000+ mocap systems)
@@ -162,11 +163,11 @@ git checkout bde0bcaa1f6aacaa9b89b226d2ae10754a23d3e1
 
 ### The Challenge
 
-Out of the box, IsaacLab doesn't have full support for Meta Quest 3 body tracking via ALVR/SteamVR. The IsaacLab some tweaks to properly read the body tracking data streaming from ALVR.
+Out of the box, IsaacLab doesn't have full support for Meta Quest 3 body tracking via ALVR/SteamVR. IsaacLab needs some tweaks to properly read the body tracking data streaming from ALVR.
 
 ### The Solution: OSC-Based Body Tracking
 
-We've created a patch for IsaacLab that enables body tracking support using an OSC (Open Sound Control) receiver approach. Rather than relying solely on OpenXR extensions (which can be inconsistent across platforms), this solution receives body tracking data via UDP on port 9000.
+We made some changes to IsaacLab that enables body tracking support using an OSC (Open Sound Control) receiver approach. Rather than relying solely on OpenXR extensions (which can be inconsistent across platforms), this solution receives body tracking data via UDP on port 9000. We've made this changes available as a patch directly on top of IsaacLab.
 
 **Patch available here**: [IsaacLab Body Tracking Patch](https://gist.github.com/miguelalonsojr/d0e6d25e91eed9575bd7a05543ed9125)
 
@@ -261,14 +262,14 @@ Retargeter (humanoid mapping)
 IsaacSim Robot Commands
 ```
 
-This architecture decouples the body tracking source from the simulation, making it easy to swap in different tracking systems (Vicon, OptiTrack, etc.) in the future.
+This architecture decouples the body tracking source from the simulation, making it easy to swap in different tracking systems that stream tracking data via OSC.
 
 ### Testing the Setup
 
 Once everything is installed and patched:
 
 1. **Start SteamVR** with ALVR connected
-2. **Put on your Quest 3** and ensure body tracking is active (you should see your body in the home environment)
+2. **Put on your Quest 3** and ensure body tracking is active
 3. **Launch IsaacLab** teleoperation script:
 
 ```bash
@@ -282,7 +283,7 @@ Once everything is installed and patched:
    - Press **'S'** to toggle teleoperation on/off
    - Press **'R'** to reset the simulation
 
-You should see your body movements mirrored on the GR1T2 humanoid robot in IsaacSim in real-time! The sphere markers will visualize each tracked joint, giving you immediate feedback on tracking quality.
+You should see your body movements mirrored in the simulation environment in IsaacSim in real-time! The red sphere markers will visualize each tracked joint, giving you immediate feedback on tracking quality.
 
 ## Results
 
@@ -295,7 +296,7 @@ The system successfully captures:
 - **Full 6DOF poses** with position and orientation
 - **Real-time updates** matching simulation steps
 - **Low latency** (<50ms on good WiFi)
-- **Visual feedback** via sphere markers showing body joint positions in real-time
+- **Visual feedback** via red sphere markers showing body joint positions in real-time
 - **Retargeting to GR1T2** humanoid robot morphology (hands only for now)
 
 ### Current Limitations
@@ -329,7 +330,7 @@ Key achievements:
 
 The ability to capture natural human motion in simulation opens up exciting possibilities for training embodied AI policies. Combined with sim2real transfer techniques, this data can help robots learn complex manipulation and locomotion behaviors.
 
-The OSC-based approach also makes it easy to integrate other tracking systems in the future—whether that's higher-end motion capture (Vicon, OptiTrack), depth cameras (Azure Kinect), or other VR systems.
+The OSC-based approach also makes it easy to integrate other tracking systems in the future—whether that's higher-end motion capture.
 
 Stay tuned, more great stuff to come!
 
