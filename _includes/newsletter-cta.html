@@ -6,9 +6,8 @@
     <form
       action="https://buttondown.email/api/emails/embed-subscribe/miguelalonsojr"
       method="post"
-      target="popupwindow"
-      onsubmit="window.open('https://buttondown.email/miguelalonsojr', 'popupwindow')"
       class="embeddable-buttondown-form"
+      id="newsletter-form"
     >
       <div class="form-group">
         <input
@@ -24,6 +23,54 @@
       <p class="newsletter-privacy">
         We respect your privacy. Unsubscribe at any time.
       </p>
+      <div id="newsletter-message" class="newsletter-message" style="display:none;"></div>
     </form>
   </div>
 </div>
+
+<script>
+(function() {
+  const form = document.getElementById('newsletter-form');
+  if (!form) return;
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const email = form.querySelector('input[type="email"]').value;
+    const submitBtn = form.querySelector('input[type="submit"]');
+    const messageDiv = document.getElementById('newsletter-message');
+
+    // Disable submit button
+    submitBtn.disabled = true;
+    submitBtn.value = 'Subscribing...';
+
+    // Submit via fetch
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: {
+        'Accept': 'application/json',
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        messageDiv.textContent = '✓ Thanks for subscribing! Check your email to confirm.';
+        messageDiv.style.color = '#28a745';
+        messageDiv.style.display = 'block';
+        form.querySelector('input[type="email"]').value = '';
+      } else {
+        throw new Error('Subscription failed');
+      }
+    })
+    .catch(error => {
+      messageDiv.textContent = '✗ Something went wrong. Please try again.';
+      messageDiv.style.color = '#dc3545';
+      messageDiv.style.display = 'block';
+    })
+    .finally(() => {
+      submitBtn.disabled = false;
+      submitBtn.value = 'Subscribe';
+    });
+  });
+})();
+</script>
