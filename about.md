@@ -37,6 +37,6 @@ We believe in the power of open source to accelerate innovation. We contribute t
 
 Interested in collaborating, learning more, or exploring how we can help with your AI and robotics projects?
 
-**Email:** [info@sim-intel.co](mailto:info@sim-intel.co)
+**Email:** [info@simintel.co](mailto:info@simintel.co)
 **GitHub:** [github.com/sim-intel](https://github.com/sim-intel)
 **LinkedIn:** [Miguel Alonso Jr](https://linkedin.com/in/miguelalonsojr)

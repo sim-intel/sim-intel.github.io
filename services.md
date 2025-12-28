@@ -45,4 +45,4 @@ Comprehensive robotics capabilities:
 
 ---
 
-Interested in working together? Contact us at [info@sim-intel.co](mailto:info@sim-intel.co)
+Interested in working together? Contact us at [info@simintel.co](mailto:info@simintel.co)

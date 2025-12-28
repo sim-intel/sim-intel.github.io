@@ -21,11 +21,11 @@
 title: Simulated Intelligence (σι)
 author:
   name: Simulated Intelligence
-  email: info@sim-intel.co
+  email: info@simintel.co
 description: >- # this means to ignore newlines until "baseurl:"
   Solving embodied AI through simulation.
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://sim-intel.co" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://simintel.co" # the base hostname & protocol for your site, e.g. http://example.com
 # twitter_username: jekyllrb
 github_username:  miguelalonsojr
 
