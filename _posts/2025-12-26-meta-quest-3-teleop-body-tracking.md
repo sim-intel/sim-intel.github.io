@@ -108,6 +108,13 @@ cd alvr_launcher_linux
    - **Enable body tracking**: Enable body tracking with the sink set to VRChat Body OSC on port 9000
    - **Offsets**: Set handtracking postion offsets to (0, -0.02, 0) for x, y, z and handtracking rotation offsets to (0, 5°, 0). We use this adjust the orientation of the hands for IK hand tracking. The default setup in IsaacLab has the hands rotated by about 5°, which makes it difficult for proper manipulation.
 
+  <figure style="margin: 2rem 0;">
+    <img src="/assets/images/alvr_settings.png" alt="ALVR Settings" style="width: 100%; height: 500px; object-fit: cover; object-position: center;">
+    <figcaption style="text-align: center; font-style: italic; color: #586e75; margin-top: 0.5rem;">
+      ALVR Settings
+    </figcaption>
+  </figure>
+
 ### 4. Configure SteamVR for OpenXR
 
 SteamVR needs to be set as the OpenXR runtime:
