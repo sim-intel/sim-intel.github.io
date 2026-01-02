@@ -7,7 +7,7 @@ hide_title: true
 
 ## Research Goals
 
-Our mission is to develop embodied intelligent agents capable of solving tasks that benefit humans. We accomplish this primarily through simulation and sim2real transfer, with a focus on minimizing—though not eliminating—real world robot data.
+The Research in Embodied AI (R.E.A.I) group's mission is to develop embodied intelligent agents capable of solving tasks that benefit humans. We accomplish this primarily through simulation and sim2real transfer, with a focus on minimizing—though not eliminating—real world robot data.
 
 ### Cross-Embodiment Policies
 
